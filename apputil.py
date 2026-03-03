@@ -58,6 +58,9 @@ class Genius:
             return None
 
         artist_id = hits[0].get("result", {}).get("primary_artist", {}).get("id")
+
+        if not artist_id:
+            return None
         
         # Step 2: Call artist endpoint for full details
         response = requests.get(f"{self.base_url}/artists/{artist_id}", headers=headers)
