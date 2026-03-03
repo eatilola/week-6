@@ -16,8 +16,6 @@ load_dotenv()
 ACCESS_TOKEN = os.environ['ACCESS_TOKEN']
 NAME_DEMO = __name__
 
-print("ACCESS_TOKEN present:", bool(os.getenv("ACCESS_TOKEN")))
-print("ACCESS_TOKEN repr:", repr(os.getenv("ACCESS_TOKEN")))
 
 def genius(search_term, per_page=15):
     """
