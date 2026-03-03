@@ -16,6 +16,9 @@ load_dotenv()
 ACCESS_TOKEN = os.environ['ACCESS_TOKEN']
 NAME_DEMO = __name__
 
+print("ACCESS_TOKEN present:", bool(os.getenv("ACCESS_TOKEN")))
+print("ACCESS_TOKEN repr:", repr(os.getenv("ACCESS_TOKEN")))
+
 def genius(search_term, per_page=15):
     """
     Collect data from the Genius API by searching for `search_term`.
@@ -136,52 +139,52 @@ if __name__ == "__main__":
     #   DATA COLLECTION EXAMPLE
     # ------------------------------------
 
-    # search_terms = ['The Beatles', 
-    #                 'Missy Elliot', 
-    #                 'Andy Shauf', 
-    #                 'Slowdive', 
-    #                 'Men I Trust']
+    search_terms = ['The Beatles', 
+                    'Missy Elliot', 
+                    'Andy Shauf', 
+                    'Slowdive', 
+                    'Men I Trust']
     
-    # n_results_per_term = 10
+    n_results_per_term = 10
 
-    # df_genius = genius_to_dfs(search_terms, 
-    #                           n_results_per_term=n_results_per_term,
-    #                           verbose=False)
+    df_genius = genius_to_dfs(search_terms, 
+                              n_results_per_term=n_results_per_term,
+                              verbose=False)
 
-    # df_genius.to_csv('./data/genius_data.csv')
+    df_genius.to_csv('./data/genius_data.csv')
+    
 
     # ------------------------------------
     #   SIMPLE MULTIPROCESSING EXAMPLE
     # ------------------------------------
 
-    # with Pool(4) as p:
-    #     results = p.map(job_test, [1, 2, 3, 4])
-    #     print("\nFinal results:\n", results)
+    with Pool(4) as p:
+        results = p.map(job_test, [1, 2, 3, 4])
+        print("\nFinal results:\n", results)
 
     # ------------------------------------
     #   API MULTIPROCESSING EXAMPLE
     # ------------------------------------
 
-    # search_terms = ['The Beatles', 
-    #                 'Missy Elliot', 
-    #                 'Andy Shauf', 
-    #                 'Slowdive', 
-    #                 'Men I Trust']
+    search_terms = ['The Beatles', 
+                    'Missy Elliot', 
+                    'Andy Shauf', 
+                    'Slowdive', 
+                    'Men I Trust']
     
-    # # (optional) if you need to pass multiple arguments
-    # n = 20
+    # (optional) if you need to pass multiple arguments
+    n = 20
 
-    #  # then "unpack" `args` within the function (e.g., args[0])
-    # args = [(t, n) for t in search_terms]
+     # then "unpack" `args` within the function (e.g., args[0])
+    args = [(t, n) for t in search_terms]
 
-    # with Pool(8) as p:
-    #     results = p.map(genius_to_df, search_terms)
-    #     print("\n Total number of results: ", len(results))
+    with Pool(8) as p:
+        results = p.map(genius_to_df, search_terms)
+        print("\n Total number of results: ", len(results))
 
-    # df_genius = pd.concat(results)
+    df_genius = pd.concat(results)
 
-    # df_genius.to_csv('./data/genius_data_mp.csv', index=False)
-
+    df_genius.to_csv('./data/genius_data_mp.csv', index=False)
     
 
 
