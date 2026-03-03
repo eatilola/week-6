@@ -80,20 +80,29 @@ class Genius:
         headers = {"Authorization": f"Bearer {self.access_token}"}
         params = {"q": artist_name}
         
+        # Step 1: Search to get artist ID
         response = requests.get(f"{self.base_url}/search", headers=headers, params=params)
         response.raise_for_status()
         data = response.json()
         hits = data.get("response", {}).get("hits", [])
         
         if not hits:
-            return {"artist_name": None, "artist_id": None, "followers_count": None}
+            return {"artist_name": None, "artist_id": None, "followers_count": 0}
 
-        # Take the most likely match from search results
-        artist_info = hits[0].get("result", {}).get("primary_artist", {})
+        artist_id = hits[0].get("result", {}).get("primary_artist", {}).get("id")
+        
+        if not artist_id:
+            return {"artist_name": None, "artist_id": None, "followers_count": 0}
+        
+        # Step 2: Call artist endpoint for full details
+        response = requests.get(f"{self.base_url}/artists/{artist_id}", headers=headers)
+        response.raise_for_status()
+        artist_data = response.json().get("response", {}).get("artist", {})
+        
         return {
-            "artist_name": artist_info.get("name"),
-            "artist_id": artist_info.get("id"),
-            "followers_count": artist_info.get("followers_count")
+            "artist_name": artist_data.get("name"),
+            "artist_id": artist_data.get("id"),
+            "followers_count": artist_data.get("followers_count", 0)  # default to 0 instead of None
         }
 
 
