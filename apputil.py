@@ -42,6 +42,37 @@ class Genius:
 
         return results
     
+    # def get_artist(self, artist_name: str):
+    #     """
+    #     Gets Genius artist info by name, returns a dictionary.
+    #     """
+    #     headers = {"Authorization": f"Bearer {self.access_token}"}
+    #     params = {"q": artist_name}
+        
+    #     # Step 1: Search to get artist ID
+    #     response = requests.get(f"{self.base_url}/search", headers=headers, params=params)
+    #     response.raise_for_status()
+    #     data = response.json()
+    #     hits = data.get("response", {}).get("hits", [])
+    #     if not hits:
+    #         return None
+
+    #     artist_id = hits[0].get("result", {}).get("primary_artist", {}).get("id")
+
+    #     if not artist_id:
+    #         return None
+        
+    #     # Step 2: Call artist endpoint for full details
+    #     response = requests.get(f"{self.base_url}/artists/{artist_id}", headers=headers)
+    #     response.raise_for_status()
+    #     artist_data = response.json().get("response", {}).get("artist", {})
+        
+    #     return {
+    #         "artist_name": artist_data.get("name"),
+    #         "artist_id": artist_data.get("id"),
+    #         "followers_count": artist_data.get("followers_count")
+    #     }
+
     def get_artist(self, artist_name: str):
         """
         Gets Genius artist info by name, returns a dictionary.
@@ -49,28 +80,20 @@ class Genius:
         headers = {"Authorization": f"Bearer {self.access_token}"}
         params = {"q": artist_name}
         
-        # Step 1: Search to get artist ID
         response = requests.get(f"{self.base_url}/search", headers=headers, params=params)
         response.raise_for_status()
         data = response.json()
         hits = data.get("response", {}).get("hits", [])
+        
         if not hits:
-            return None
+            return {"artist_name": None, "artist_id": None, "followers_count": None}
 
-        artist_id = hits[0].get("result", {}).get("primary_artist", {}).get("id")
-
-        if not artist_id:
-            return None
-        
-        # Step 2: Call artist endpoint for full details
-        response = requests.get(f"{self.base_url}/artists/{artist_id}", headers=headers)
-        response.raise_for_status()
-        artist_data = response.json().get("response", {}).get("artist", {})
-        
+        # Take the most likely match from search results
+        artist_info = hits[0].get("result", {}).get("primary_artist", {})
         return {
-            "artist_name": artist_data.get("name"),
-            "artist_id": artist_data.get("id"),
-            "followers_count": artist_data.get("followers_count")
+            "artist_name": artist_info.get("name"),
+            "artist_id": artist_info.get("id"),
+            "followers_count": artist_info.get("followers_count")
         }
 
 
