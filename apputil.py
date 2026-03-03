@@ -73,13 +73,12 @@ class Genius:
     #         "artist_id": artist_data.get("id"),
     #         "followers_count": artist_data.get("followers_count", 0)  # default to 0 instead of None
     #     }
-
-    def get_artist(self, artist_name: str):
+    def get_artist(self, search_term: str):
         """
         Gets Genius artist info by name, returns a dictionary.
         """
         headers = {"Authorization": f"Bearer {self.access_token}"}
-        params = {"q": artist_name}
+        params = {"q": search_term}  # change this too
         
         # Step 1: Search to get artist ID
         response = requests.get(f"{self.base_url}/search", headers=headers, params=params)
