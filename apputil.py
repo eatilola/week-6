@@ -78,40 +78,34 @@ class Genius:
         Gets Genius artist info by name, returns a dictionary.
         """
         headers = {"Authorization": f"Bearer {self.access_token}"}
-        params = {"q": search_term}  # change this too
+        params = {"q": search_term}
         
         # Step 1: Search to get artist ID
         response = requests.get(f"{self.base_url}/search", headers=headers, params=params)
         try:
             response.raise_for_status()
         except requests.HTTPError:
-            return {"artist_name": None, "artist_id": None, "followers_count": 0}
+            return {}
         
         data = response.json()
         hits = data.get("response", {}).get("hits", [])
         
         if not hits:
-            return {"artist_name": None, "artist_id": None, "followers_count": 0}
+            return {}
 
         artist_id = hits[0].get("result", {}).get("primary_artist", {}).get("id")
         
         if not artist_id:
-            return {"artist_name": None, "artist_id": None, "followers_count": 0}
+            return {}
         
-        # Step 2: Call artist endpoint for full details
+        # Step 2: Call artist endpoint and return full JSON
         response = requests.get(f"{self.base_url}/artists/{artist_id}", headers=headers)
         try:
             response.raise_for_status()
         except requests.HTTPError:
-            return {"artist_name": None, "artist_id": None, "followers_count": 0}
+            return {}
         
-        artist_data = response.json().get("response", {}).get("artist", {})
-        
-        return {
-            "artist_name": artist_data.get("name"),
-            "artist_id": artist_data.get("id"),
-            "followers_count": artist_data.get("followers_count", 0)
-        }
+        return response.json()  # Full JSON including "response" key
 
 
     # def get_artists(self, search_terms: list):
@@ -146,13 +140,16 @@ class Genius:
         """
         rows = []
         for term in search_terms:
-            info = self.get_artist(term)
+            full_json = self.get_artist(term)
+            
+            # Extract artist data from the full JSON response
+            artist_data = full_json.get("response", {}).get("artist", {})
+            
             rows.append({
                 "search_term": term,
-                "artist_name": info.get("artist_name"),
-                "artist_id": info.get("artist_id"),
-                "followers_count": info.get("followers_count", 0)  # ensure default 0
+                "artist_name": artist_data.get("name"),
+                "artist_id": artist_data.get("id"),
+                "followers_count": artist_data.get("followers_count", 0)
             })
 
         return pd.DataFrame(rows)
-    
